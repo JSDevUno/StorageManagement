@@ -2,6 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +13,12 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
 /**
  *
  
@@ -19,9 +27,10 @@ import javax.swing.table.DefaultTableModel;
 
 public class DashBoard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form DashBoard
-     */
+    private DefaultPieDataset pieDataset;
+    private JFreeChart pieChart;
+    private PiePlot piePlot;
+    private ChartPanel chartPanel;
     private int initialClickX, initialClickY;
     Connection conn = null;
     PreparedStatement pst = null;
@@ -33,6 +42,31 @@ public class DashBoard extends javax.swing.JFrame {
         conn = connectDB.myconnection();
         fetchUsers();
     }
+    public void showPieChart(int used, int remaining, int userCount) {
+        pieDataset = new DefaultPieDataset();
+
+        pieDataset.setValue("Used Storage", used);
+        pieDataset.setValue("Remaining Storage", remaining);
+        pieDataset.setValue("User Count", userCount); 
+
+        pieChart = ChartFactory.createPieChart("STORAGE CHART", pieDataset, true, true, false);
+
+        pieChart.setBackgroundPaint(new Color(232,232,232));
+        pieChart.setBorderVisible(false);
+        pieChart.setPadding(new RectangleInsets(0, 0, 0, 0));
+
+        pieChart.getPlot().setBackgroundPaint(Color.WHITE);
+
+        chartPanel = new ChartPanel(pieChart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(360, 280));
+
+        pieChartPanel.removeAll();
+        pieChartPanel.add(chartPanel, BorderLayout.CENTER);
+        pieChartPanel.revalidate();
+
+        pieChartPanel.setVisible(true);
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -118,12 +152,15 @@ public class DashBoard extends javax.swing.JFrame {
         showMax = new javax.swing.JTextField();
         jLabel23 = new javax.swing.JLabel();
         showRemaining = new javax.swing.JTextField();
+        viewchart = new javax.swing.JButton();
         search1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         viewuserstable = new javax.swing.JTable();
         sort = new javax.swing.JComboBox<>();
         jLabel28 = new javax.swing.JLabel();
         backlist = new javax.swing.JButton();
+        search2 = new javax.swing.JPanel();
+        pieChartPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(232, 232, 232));
@@ -234,7 +271,7 @@ public class DashBoard extends javax.swing.JFrame {
                 .addComponent(users, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(76, 76, 76)
                 .addComponent(storage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 128, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
                 .addComponent(logout)
                 .addGap(53, 53, 53))
         );
@@ -908,11 +945,6 @@ public class DashBoard extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel23)
-                    .addComponent(jLabel25))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel24)
                     .addComponent(jLabel26))
                 .addGap(180, 193, Short.MAX_VALUE)
@@ -924,6 +956,11 @@ public class DashBoard extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel23)
+                    .addComponent(jLabel25))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -949,6 +986,22 @@ public class DashBoard extends javax.swing.JFrame {
                 .addContainerGap(124, Short.MAX_VALUE))
         );
 
+        viewchart.setBackground(new java.awt.Color(0, 0, 204));
+        viewchart.setFont(new java.awt.Font("OCR A Extended", 1, 14)); // NOI18N
+        viewchart.setForeground(new java.awt.Color(255, 255, 255));
+        viewchart.setText("VIEW CHART");
+        viewchart.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        viewchart.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewchartMouseClicked(evt);
+            }
+        });
+        viewchart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewchartActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout storageinfoLayout = new javax.swing.GroupLayout(storageinfo);
         storageinfo.setLayout(storageinfoLayout);
         storageinfoLayout.setHorizontalGroup(
@@ -957,13 +1010,19 @@ public class DashBoard extends javax.swing.JFrame {
                 .addContainerGap(71, Short.MAX_VALUE)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(61, 61, 61))
+            .addGroup(storageinfoLayout.createSequentialGroup()
+                .addGap(262, 262, 262)
+                .addComponent(viewchart)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         storageinfoLayout.setVerticalGroup(
             storageinfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, storageinfoLayout.createSequentialGroup()
-                .addContainerGap(73, Short.MAX_VALUE)
+                .addContainerGap(77, Short.MAX_VALUE)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(67, 67, 67))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewchart, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32))
         );
 
         tabs.addTab("storageInfo", storageinfo);
@@ -1048,6 +1107,31 @@ public class DashBoard extends javax.swing.JFrame {
 
         tabs.addTab("search", search1);
 
+        search2.setBackground(new java.awt.Color(232, 232, 232));
+        search2.setPreferredSize(new java.awt.Dimension(900, 700));
+
+        pieChartPanel.setBackground(new java.awt.Color(204, 0, 0));
+        pieChartPanel.setLayout(new java.awt.BorderLayout());
+
+        javax.swing.GroupLayout search2Layout = new javax.swing.GroupLayout(search2);
+        search2.setLayout(search2Layout);
+        search2Layout.setHorizontalGroup(
+            search2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(search2Layout.createSequentialGroup()
+                .addGap(89, 89, 89)
+                .addComponent(pieChartPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(84, Short.MAX_VALUE))
+        );
+        search2Layout.setVerticalGroup(
+            search2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(search2Layout.createSequentialGroup()
+                .addGap(95, 95, 95)
+                .addComponent(pieChartPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(101, Short.MAX_VALUE))
+        );
+
+        tabs.addTab("search", search2);
+
         getContentPane().add(tabs, new org.netbeans.lib.awtextra.AbsoluteConstraints(277, -42, 670, 740));
 
         setSize(new java.awt.Dimension(950, 700));
@@ -1060,23 +1144,31 @@ public class DashBoard extends javax.swing.JFrame {
 
     private void storageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_storageActionPerformed
         tabs.setSelectedIndex(3);
+        PreparedStatement sumStmt = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement sumStmt = conn.prepareStatement("SELECT SUM(total_items) AS total FROM users");
-            ResultSet rs = sumStmt.executeQuery();
+            sumStmt = conn.prepareStatement("SELECT SUM(total_items) AS total, COUNT(*) AS user_count FROM users");
+            rs = sumStmt.executeQuery();
             if (rs.next()) {
                 int totalItems = rs.getInt("total");
-                int remain = 1000000 - totalItems;
-                showMax.setText("1000000"); // Assuming this is a maximum storage capacity
-                showAllocated.setText("10000");
+                int userCount = rs.getInt("user_count");
+                int maxStorage = 1000000; // Assuming this is the maximum storage capacity
+                int allocated = 10000; // Assuming a static allocation value for this example
+                int remain = maxStorage - totalItems;
+
+                showMax.setText(String.valueOf(maxStorage));
+                showAllocated.setText(String.valueOf(allocated));
                 showUsed.setText(String.valueOf(totalItems));
                 showRemaining.setText(String.valueOf(remain));
+
+                showPieChart(totalItems, remain, userCount);
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         } finally {
             try {
                 if (rs != null) rs.close();
-                if (pst != null) pst.close();
+                if (sumStmt != null) sumStmt.close();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
@@ -1442,6 +1534,14 @@ public class DashBoard extends javax.swing.JFrame {
         initialClickX = evt.getX();
         initialClickY = evt.getY();
     }//GEN-LAST:event_jLabel27MousePressed
+
+    private void viewchartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewchartMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_viewchartMouseClicked
+
+    private void viewchartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewchartActionPerformed
+       tabs.setSelectedIndex(5);
+    }//GEN-LAST:event_viewchartActionPerformed
     public void fetchUsersSortedAsc() {
         String selectedColumn = sort.getSelectedItem().toString(); 
         if (!isValidColumn(selectedColumn)) {
@@ -1579,6 +1679,7 @@ public class DashBoard extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JButton logout;
+    private javax.swing.JPanel pieChartPanel;
     private javax.swing.JPanel remove;
     private javax.swing.JTextField removeEmail;
     private javax.swing.JTextField removeID;
@@ -1587,6 +1688,7 @@ public class DashBoard extends javax.swing.JFrame {
     private javax.swing.JTextField removeUsername;
     private javax.swing.JPanel search;
     private javax.swing.JPanel search1;
+    private javax.swing.JPanel search2;
     private javax.swing.JTextField searchedID;
     private javax.swing.JTextField showAllocated;
     private javax.swing.JTextField showMax;
@@ -1602,6 +1704,7 @@ public class DashBoard extends javax.swing.JFrame {
     private javax.swing.JTextField textPass;
     private javax.swing.JTextField textTotalItems;
     private javax.swing.JButton users;
+    private javax.swing.JButton viewchart;
     private javax.swing.JButton viewusers;
     private javax.swing.JTable viewuserstable;
     // End of variables declaration//GEN-END:variables
